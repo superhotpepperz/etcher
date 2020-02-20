@@ -60,7 +60,6 @@
     "color": "^2.0.1",
     "d3": "^4.13.0",
     "debug": "^3.1.0",
-    "electron-json-storage": "^4.1.8",
     "electron-updater": "4.0.6",
     "etcher-sdk": "^3.0.1",
     "flexboxgrid": "^6.3.0",

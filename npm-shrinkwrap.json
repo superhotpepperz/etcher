@@ -4604,19 +4604,6 @@
         }
       }
     },
-    "electron-json-storage": {
-      "version": "4.1.8",
-      "resolved": "https://registry.npmjs.org/electron-json-storage/-/electron-json-storage-4.1.8.tgz",
-      "integrity": "sha512-cBaxfSVG5SLWIvgkRJyl96W2VPCvvBcLjNaOfKC1oCENzStMt2BDzh/Qfxcz2M1mK4kNnsVv//CD46jIRrqWPw==",
-      "requires": {
-        "async": "^2.0.0",
-        "lockfile": "^1.0.4",
-        "lodash": "^4.0.1",
-        "mkdirp": "^0.5.1",
-        "rimraf": "^2.5.1",
-        "write-file-atomic": "^2.4.2"
-      }
-    },
     "electron-mocha": {
       "version": "8.2.0",
       "resolved": "https://registry.npmjs.org/electron-mocha/-/electron-mocha-8.2.0.tgz",
@@ -7260,7 +7247,8 @@
     "imurmurhash": {
       "version": "0.1.4",
       "resolved": "https://registry.npmjs.org/imurmurhash/-/imurmurhash-0.1.4.tgz",
-      "integrity": "sha1-khi5srkoojixPcT7a21XbyMUU+o="
+      "integrity": "sha1-khi5srkoojixPcT7a21XbyMUU+o=",
+      "dev": true
     },
     "in-publish": {
       "version": "2.0.0",
@@ -8284,14 +8272,6 @@
           "integrity": "sha1-zg6+ql94yxiSXqfYENe1mwEP1RU=",
           "dev": true
         }
-      }
-    },
-    "lockfile": {
-      "version": "1.0.4",
-      "resolved": "https://registry.npmjs.org/lockfile/-/lockfile-1.0.4.tgz",
-      "integrity": "sha512-cvbTwETRfsFh4nHsL1eGWapU1XFi5Ot9E85sWAwia7Y7EgB7vfqcZhTKZ+l7hCGxSPoushMv5GKhT5PdLv03WA==",
-      "requires": {
-        "signal-exit": "^3.0.2"
       }
     },
     "lodash": {
@@ -14345,6 +14325,7 @@
       "version": "2.4.3",
       "resolved": "https://registry.npmjs.org/write-file-atomic/-/write-file-atomic-2.4.3.tgz",
       "integrity": "sha512-GaETH5wwsX+GcnzhPgKcKjJ6M2Cq3/iZp1WyY/X1CSqrW+jVNM9Y7D8EC2sM4ZG/V8wZlSniJnCKWPmBYAucRQ==",
+      "dev": true,
       "requires": {
         "graceful-fs": "^4.1.11",
         "imurmurhash": "^0.1.4",

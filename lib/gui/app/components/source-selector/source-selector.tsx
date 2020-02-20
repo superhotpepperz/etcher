@@ -16,7 +16,6 @@
 
 import { faFile, faLink } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as jsonStorageCb from 'electron-json-storage';
 import { sourceDestination } from 'etcher-sdk';
 import * as _ from 'lodash';
 import { GPTPartition, MBRPartition } from 'partitioninfo';
@@ -46,35 +45,24 @@ import { colors } from '../../theme';
 import { middleEllipsis } from '../../utils/middle-ellipsis';
 import { SVGIcon } from '../svg-icon/svg-icon';
 
-const jsonStorage = {
-	get: (key: string) => {
-		return new Promise((resolve, reject) => {
-			jsonStorageCb.get(key, (err, value) => {
-				if (err) {
-					reject(err);
-					throw err;
-				}
-				resolve(value);
-				return value;
-			});
-		});
-	},
-	set: (key: string, value: object) => {
-		return new Promise((resolve, reject) => {
-			jsonStorageCb.set(key, value, err => {
-				if (err) {
-					reject(err);
-					throw err;
-				}
-				resolve(value);
-				return value;
-			});
-		});
-	},
-};
+const recentUrlImagesKey = 'recentUrlImages';
 
-const getRecentUrlImages = () =>
-	jsonStorage.get('recentUrlImages') as Promise<string[]>;
+function normalizeRecentUrlImages(urls: string[]) {
+	return _.takeRight(urls.filter(_.isString), 5);
+}
+
+function getRecentUrlImages(): string[] {
+	return normalizeRecentUrlImages(
+		JSON.parse(localStorage.getItem(recentUrlImagesKey) || '[]'),
+	);
+}
+
+function setRecentUrlImages(urls: string[]) {
+	localStorage.setItem(
+		recentUrlImagesKey,
+		JSON.stringify(normalizeRecentUrlImages(urls)),
+	);
+}
 
 const Card = styled(BaseCard)`
 	hr {
@@ -109,16 +97,8 @@ const URLSelector = ({ done }: { done: (imageURL: string) => void }) => {
 	] = React.useState([]);
 	React.useEffect(() => {
 		const fetchRecentUrlImages = async () => {
-			try {
-				const recentUrlImages: string[] = await getRecentUrlImages();
-				if (!Array.isArray(recentUrlImages)) {
-					setRecentImages([]);
-				} else {
-					setRecentImages(recentUrlImages);
-				}
-			} catch (err) {
-				console.error(err);
-			}
+			const recentUrlImages: string[] = await getRecentUrlImages();
+			setRecentImages(recentUrlImages);
 		};
 		fetchRecentUrlImages();
 	}, []);
@@ -128,10 +108,7 @@ const URLSelector = ({ done }: { done: (imageURL: string) => void }) => {
 				const sanitizedRecentUrls = _.uniq(
 					_.reject([...recentImages, imageURL], _.isEmpty),
 				);
-				await jsonStorage.set(
-					'recentUrlImages',
-					_.takeRight(sanitizedRecentUrls, 5),
-				);
+				setRecentUrlImages(sanitizedRecentUrls);
 				done(imageURL);
 			}}
 		>
@@ -228,7 +205,6 @@ export class SourceSelector extends React.Component<
 > {
 	private unsubscribe: () => void;
 	private afterSelected: SourceSelectorProps['afterSelected'];
-	private flows: Flow[];
 
 	constructor(props: SourceSelectorProps) {
 		super(props);
@@ -245,19 +221,6 @@ export class SourceSelector extends React.Component<
 		this.onDrop = this.onDrop.bind(this);
 		this.showSelectedImageDetails = this.showSelectedImageDetails.bind(this);
 		this.afterSelected = props.afterSelected.bind(this);
-
-		this.flows = [
-			{
-				onClick: this.openImageSelector,
-				label: 'Flash from file',
-				icon: <FontAwesomeIcon icon={faFile} />,
-			},
-			{
-				onClick: this.openURLSelector,
-				label: 'Flash from URL',
-				icon: <FontAwesomeIcon icon={faLink} />,
-			},
-		];
 	}
 
 	public componentDidMount() {
@@ -376,7 +339,7 @@ export class SourceSelector extends React.Component<
 		}
 
 		let source;
-		if (SourceType.name === sourceDestination.File.name) {
+		if (SourceType === sourceDestination.File) {
 			source = new sourceDestination.File({
 				path: imagePath,
 			});
@@ -545,9 +508,24 @@ export class SourceSelector extends React.Component<
 							</>
 						) : (
 							<StepSelection>
-								{_.map(this.flows, flow => {
-									return <FlowSelector key={flow.label} flow={flow} />;
-								})}
+								<FlowSelector
+									key="Flash from file"
+									flow={{
+										onClick: this.openImageSelector,
+										label: 'Flash from file',
+										icon: <FontAwesomeIcon icon={faFile} />,
+									}}
+								/>
+								;
+								<FlowSelector
+									key="Flash from URL"
+									flow={{
+										onClick: this.openURLSelector,
+										label: 'Flash from URL',
+										icon: <FontAwesomeIcon icon={faLink} />,
+									}}
+								/>
+								;
 							</StepSelection>
 						)}
 					</div>
